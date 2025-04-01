@@ -21,7 +21,7 @@ Ideal for:
 
 Best practice:
 
-- Consider if current information might be valuable in future conversations - if unsure, ask the user about storig it.
+- Consider if current information might be valuable in future conversations - if unsure, ask the user about storing it.
 ```
 
 ## Getting started
