@@ -1,4 +1,28 @@
-# AI Autonomous Data Manager
+# AI Autonomous Data Manager MCP
+
+## About
+
+The following text is what th AI sees when checking MCP server capabilities:
+
+```
+AI-powered data collection manager enabling autonomous data operations with dynamic schemas.
+
+Key capabilities:
+
+- Persist data across conversations
+- Create and manage structured collections on-the-fly
+- Perform CRUD operations with schema validation
+
+Ideal for:
+
+- Knowledge bases: Organize information from conversations
+- Project tracking: Manage tasks, statuses, and deadlines
+- Learning content: Track progress and generate quizzes
+
+Best practice:
+
+- Consider if current information might be valuable in future conversations - if unsure, ask the user about storig it.
+```
 
 ## Getting started
 

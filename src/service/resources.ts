@@ -46,7 +46,7 @@ export function getServerDescription(): ReadResourceResult {
           "- Project tracking: Manage tasks, statuses, and deadlines",
           "- Learning content: Track progress and generate quizzes",
           "\n\nBest practice: Consider if current information might be" +
-            " valuable in future conversations - if unsure, ask the user about saving it.",
+            " valuable in future conversations - if unsure, ask the user about storing it.",
           "\n\nNote: Maintains ~10 most recently used collections",
         ].join("\n"),
       },
