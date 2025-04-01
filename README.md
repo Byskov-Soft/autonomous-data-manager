@@ -30,7 +30,7 @@ Best practice:
 
 To run in Cursor in stdio mode do the following:
 
-- Modify `run.sh` to set the correct path
+- Copy `run-example.sh` to `run.sh` and set the correct path (to the repository directory)
 
 - Start MongoDB using `docker-compose up` or use your own Mongo instance
 
@@ -42,7 +42,7 @@ To run in Cursor in stdio mode do the following:
     {
         "mcpServers": {
             "data_service": {
-                // Use same path as mentioned above
+                // Same repository path as mentioned above
                 "command": "/<path>/run.sh",
                 "args": []
             }

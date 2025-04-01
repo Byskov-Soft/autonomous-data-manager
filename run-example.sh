@@ -7,6 +7,6 @@ export SSE_MODE_PORT=3001
 export SSE_MODE_HOST=localhost
 export RUN_MODE=command
 
-cd /home/DATA/src/assistant-x
+cd /full/path/to/repo
 ./node_modules/.bin/tsx src/index.ts
 
