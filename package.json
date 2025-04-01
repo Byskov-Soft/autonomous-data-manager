@@ -1,0 +1,31 @@
+{
+  "name": "ai_autonomous_data_manager",
+  "version": "1.0.0",
+  "description": "Node.js TypeScript project",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "dotenv -- tsx src/index.ts",
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/djv": "^2.1.4",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.13.14",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "ajv": "^8.17.1",
+    "djv": "^2.1.4",
+    "dotenv-cli": "^8.0.0",
+    "express": "^5.0.1",
+    "mongodb": "^6.15.0",
+    "zod": "^3.24.2"
+  }
+}
