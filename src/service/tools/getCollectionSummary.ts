@@ -1,10 +1,14 @@
 import { ToolInputParams, ToolReturnParams } from "../../models/types.js";
 import { getFormattedCollectionSummary } from "../../persistence/summarizer.js";
 
-const getCollectionSummarySchema = {
+export const getCollectionSummarySchema = {
   name: "collection_summary",
-  description:
-    "Get a summary of all records in a collection, showing their IDs and summaries",
+  description: [
+    "Get a summary of all records in a collection, showing their IDs and summaries.",
+    "When you have no idea about the contents of a collection, use this to get an",
+    "overview instead of fetching individual records to find out. Always try to limit",
+    "the number tokens used in your tasks.",
+  ].join(" "),
   inputSchema: {
     type: "object",
     properties: {
@@ -24,7 +28,7 @@ const getCollectionSummarySchema = {
  * @param params - Tool input parameters containing collection name
  * @returns Tool return parameters with formatted summary text
  */
-async function getCollectionSummary(
+export async function getCollectionSummary(
   params: ToolInputParams
 ): Promise<ToolReturnParams> {
   console.log("getCollectionSummary", params);
@@ -56,5 +60,3 @@ async function getCollectionSummary(
     };
   }
 }
-
-export { getCollectionSummary, getCollectionSummarySchema };

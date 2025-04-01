@@ -1,5 +1,9 @@
 import { ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
-import { getAllCollectionTypes } from "../persistence/persistCollectionType.js";
+import {
+  getAllCollectionTypes,
+  deleteCollectionType,
+} from "../persistence/persistCollectionType.js";
+import { getDynamicCollection } from "../persistence/persistCollectionData.js";
 
 /**
  * Lists the resources collection as an MCP resource
@@ -62,8 +66,38 @@ export async function readCollectionsInfo(): Promise<ReadResourceResult> {
   // Get all resource collections
   const collections = await getAllCollectionTypes();
 
-  // Sort by created_at in descending order and limit to 20
-  const sortedCollections = collections
+  // Filter out collections that don't exist in MongoDB and clean up their metadata
+  const existingCollections = await Promise.all(
+    collections.map(async (collection) => {
+      try {
+        const mongoCollection = await getDynamicCollection(
+          collection.collection_name
+        );
+
+        // Check if collection exists by trying to list its indexes
+        const hasIndexes = await mongoCollection.listIndexes().hasNext();
+
+        if (!hasIndexes) {
+          throw new Error("Collection has no indexes");
+        }
+        return collection;
+      } catch (error) {
+        console.log(
+          `Collection ${collection.collection_name} does not exist in MongoDB, removing its type record`
+        );
+        // Delete the collection type record since the actual collection doesn't exist
+        await deleteCollectionType(collection.id);
+        return null;
+      }
+    })
+  );
+
+  // Remove null entries and sort by created_at in descending order
+  const sortedCollections = existingCollections
+    .filter(
+      (collection): collection is NonNullable<typeof collection> =>
+        collection !== null
+    )
     .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
     .slice(0, 20);
 
