@@ -1,9 +1,9 @@
-import { updateInCollection } from '../../persistence/CollectionDataPersistence.js'
-import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
+import { CallToolRequest, CallToolResult } from '@modelcontextprotocol/sdk/types.js'
 import { ObjectId } from 'mongodb'
 import { getToolsTextResponse } from '../../lib/utils.js'
-import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
 import { TOOL_NAME } from '../../models/enums.js'
+import { updateInCollection } from '../../persistence/CollectionDataPersistence.js'
+import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
 
 export const deleteFromCollectionSchema = {
   name: TOOL_NAME.DELETE_FROM_COLLECTION,
@@ -17,7 +17,7 @@ export const deleteFromCollectionSchema = {
       },
       attribute: {
         type: 'string',
-        description: "Must be either '_id' or 'id'",
+        description: "Must be either '_id' or 'id' (if 'id' is present on the schema)",
         enum: ['_id', 'id']
       },
       value: {
@@ -65,7 +65,7 @@ export async function deleteFromCollection(params: CallToolRequest['params']): P
 
     // Create query for exact match on attribute
     const query: Record<string, unknown> = {}
-    query[attribute] = new ObjectId(value as string)
+    query[attribute] = attribute === '_id' ? new ObjectId(value as string) : value
 
     // Use updateInCollection instead of deleteInCollection
     const result = await updateInCollection(collection_name, query, {
