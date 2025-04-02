@@ -1,9 +1,10 @@
-import { createCollectionType } from '../../persistence/persistCollectionType.js'
+import { createCollectionType } from '../../persistence/CollectionTypePersistence.js'
 import { CollectionType } from '../../models/entities.js'
-import { ToolInputParams, ToolReturnParams } from '../../models/types.js'
-import { transformStringToJson } from '../../utils.js'
-import { getDynamicCollection } from '../../persistence/persistCollectionData.js'
+import { transformStringToJson, getToolsTextResponse } from '../../lib/utils.js'
+import { getDynamicCollection } from '../../persistence/CollectionDataPersistence.js'
 import { z } from 'zod'
+import { CallToolRequest, CallToolResult } from '@modelcontextprotocol/sdk/types.js'
+import { TOOL_NAME } from '../../models/enums.js'
 
 const COLLECTION_TYPE_TOOL_DESCRIPTION = [
   'Add a collection type to the database. This allows the AI to define a collection',
@@ -48,7 +49,7 @@ const COLLECTION_TYPE_EXAMPLE_RECORD = `
 `
 
 export const addCollectionTypeSchema = {
-  name: 'add_collection_type',
+  name: TOOL_NAME.ADD_COLLECTION_TYPE,
   description: COLLECTION_TYPE_TOOL_DESCRIPTION,
   inputSchema: {
     type: 'object',
@@ -70,7 +71,7 @@ export const addCollectionTypeSchema = {
  * @param collectionData - JSON string containing the collection data
  * @returns Object with success message and created collection details
  */
-export async function addCollectionType(params: ToolInputParams): Promise<ToolReturnParams> {
+export async function addCollectionType(params: CallToolRequest['params']): Promise<CallToolResult> {
   console.log('Adding collection type:', params)
   let collection: string
   let jsonCollection: Record<string, unknown>
@@ -80,11 +81,7 @@ export async function addCollectionType(params: ToolInputParams): Promise<ToolRe
   try {
     collection = z.string().min(1).parse(params?.arguments?.collection)
   } catch {
-    return {
-      success: false,
-      type: 'text',
-      text: "'collection' must be present in the request params arguments"
-    }
+    return getToolsTextResponse(false, "'collection' must be present in the request params arguments")
   }
 
   // Parse the collection data from JSON string to JSON object
@@ -93,22 +90,20 @@ export async function addCollectionType(params: ToolInputParams): Promise<ToolRe
   try {
     jsonCollection = transformStringToJson(collection)
   } catch (error) {
-    return {
-      success: false,
-      type: 'text',
-      text: `Invalid JSON in document: ${(error as Error)?.message ?? 'Unknown error'}`
-    }
+    return getToolsTextResponse(
+      false,
+      `Invalid JSON in document: ${(error as Error)?.message ?? 'Unknown error'}`
+    )
   }
 
   // Validate the collection schema
   try {
     collectionType = CollectionType.parse(jsonCollection)
   } catch {
-    return {
-      success: false,
-      type: 'text',
-      text: "collectionType is invalid. Did you remember to include a 'summary' field of type string?"
-    }
+    return getToolsTextResponse(
+      false,
+      "collectionType is invalid. Did you remember to include a 'summary' field of type string?"
+    )
   }
 
   // Insert the collection type into the database
@@ -129,17 +124,9 @@ export async function addCollectionType(params: ToolInputParams): Promise<ToolRe
 
     await createCollectionType(newCollection)
 
-    return {
-      success: true,
-      type: 'text',
-      text: `Collection '${newCollection.name}' was added and initialized`
-    }
+    return getToolsTextResponse(true, `Collection '${newCollection.name}' was added and initialized`)
   } catch (error) {
     console.log('Error adding collection:', (error as Error).message)
-    return {
-      success: false,
-      type: 'text',
-      text: `Error adding collection: ${error}`
-    }
+    return getToolsTextResponse(false, `Error adding collection: ${error}`)
   }
 }

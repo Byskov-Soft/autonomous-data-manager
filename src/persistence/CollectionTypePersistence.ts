@@ -1,29 +1,29 @@
-import { Collection } from "mongodb";
-import { CollectionType } from "../models/entities.js";
-import { useDatabase } from "../service/database.js";
-import { COLLECTIONS } from "../models/types.js";
+import { Collection } from 'mongodb'
+import { CollectionType } from '../models/entities.js'
+import { useDatabase } from '../lib/database.js'
+import { COLLECTIONS } from '../models/enums.js'
 
 /**
  * Helper function to ensure the record follows the CollectionType model
  * Particularly ensures the schema field is properly parsed if it's a string
  */
 function normalizeCollectionType(record: unknown): CollectionType {
-  if (typeof record === "object") {
+  if (typeof record === 'object') {
     try {
       // We don't modify the schema field here, just validate it can be parsed
-      CollectionType.parse(record);
+      CollectionType.parse(record)
     } catch (error) {
       console.error(
-        "Invalid schema for collection-type record:",
+        'Invalid schema for collection-type record:',
         JSON.stringify(record, null, 2),
         error
-      );
+      )
     }
   } else {
-    console.error("Invalid collection-type:", record);
+    console.error('Invalid collection-type:', record)
   }
 
-  return record as CollectionType;
+  return record as CollectionType
 }
 
 /**
@@ -31,8 +31,8 @@ function normalizeCollectionType(record: unknown): CollectionType {
  * @returns Promise resolving to the resources collection
  */
 async function getCollectionType(): Promise<Collection<CollectionType>> {
-  const db = await useDatabase();
-  return db.collection<CollectionType>(COLLECTIONS.COLLECTION_TYPES);
+  const db = await useDatabase()
+  return db.collection<CollectionType>(COLLECTIONS.COLLECTION_TYPES)
 }
 
 /**
@@ -41,18 +41,18 @@ async function getCollectionType(): Promise<Collection<CollectionType>> {
  * @returns Promise resolving to the created resource
  */
 export async function createCollectionType(
-  resource: Omit<CollectionType, "created_at" | "updated_at">
+  resource: Omit<CollectionType, 'created_at' | 'updated_at'>
 ): Promise<CollectionType> {
-  const collection = await getCollectionType();
+  const collection = await getCollectionType()
 
   const newResource: CollectionType = {
     ...resource,
     created_at: new Date(),
-    updated_at: new Date(),
-  };
+    updated_at: new Date()
+  }
 
-  await collection.insertOne(newResource);
-  return newResource;
+  await collection.insertOne(newResource)
+  return newResource
 }
 
 /**
@@ -60,12 +60,10 @@ export async function createCollectionType(
  * @param id The ID of the resource to retrieve
  * @returns Promise resolving to the resource or null if not found
  */
-export async function getCollectionTypeById(
-  id: string
-): Promise<CollectionType | null> {
-  const collection = await getCollectionType();
-  const resource = await collection.findOne({ id });
-  return resource ? normalizeCollectionType(resource) : null;
+export async function getCollectionTypeById(id: string): Promise<CollectionType | null> {
+  const collection = await getCollectionType()
+  const resource = await collection.findOne({ id })
+  return resource ? normalizeCollectionType(resource) : null
 }
 
 /**
@@ -73,9 +71,9 @@ export async function getCollectionTypeById(
  * @returns Promise resolving to an array of resources
  */
 export async function getAllCollectionTypes(): Promise<CollectionType[]> {
-  const collection = await getCollectionType();
-  const resources = await collection.find().toArray();
-  return resources.map((resource) => normalizeCollectionType(resource));
+  const collection = await getCollectionType()
+  const resources = await collection.find().toArray()
+  return resources.map((resource) => normalizeCollectionType(resource))
 }
 
 /**
@@ -86,22 +84,22 @@ export async function getAllCollectionTypes(): Promise<CollectionType[]> {
  */
 export async function updateCollectionType(
   id: string,
-  updates: Partial<Omit<CollectionType, "id" | "created_at">>
+  updates: Partial<Omit<CollectionType, 'id' | 'created_at'>>
 ): Promise<CollectionType | null> {
-  const collection = await getCollectionType();
+  const collection = await getCollectionType()
 
   const result = await collection.findOneAndUpdate(
     { id },
     {
       $set: {
         ...updates,
-        updated_at: new Date(),
-      },
+        updated_at: new Date()
+      }
     },
-    { returnDocument: "after" }
-  );
+    { returnDocument: 'after' }
+  )
 
-  return result ? normalizeCollectionType(result) : null;
+  return result ? normalizeCollectionType(result) : null
 }
 
 /**
@@ -110,9 +108,9 @@ export async function updateCollectionType(
  * @returns Promise resolving to true if deleted, false if not found
  */
 export async function deleteCollectionType(id: string): Promise<boolean> {
-  const collection = await getCollectionType();
-  const result = await collection.deleteOne({ id });
-  return result.deletedCount > 0;
+  const collection = await getCollectionType()
+  const result = await collection.deleteOne({ id })
+  return result.deletedCount > 0
 }
 
 /**
@@ -120,14 +118,12 @@ export async function deleteCollectionType(id: string): Promise<boolean> {
  * @param collectionName The collection name to check
  * @returns Promise resolving to true if exists, false otherwise
  */
-export async function CollectionTypeExists(
-  collectionName: string
-): Promise<boolean> {
-  const collection = await getCollectionType();
+export async function CollectionTypeExists(collectionName: string): Promise<boolean> {
+  const collection = await getCollectionType()
   const count = await collection.countDocuments({
-    collection_name: collectionName,
-  });
-  return count > 0;
+    collection_name: collectionName
+  })
+  return count > 0
 }
 
 /**
@@ -138,9 +134,9 @@ export async function CollectionTypeExists(
 export async function getCollectionTypeByCollectionName(
   collectionName: string
 ): Promise<CollectionType | null> {
-  const collection = await getCollectionType();
+  const collection = await getCollectionType()
   const resource = await collection.findOne({
-    collection_name: collectionName,
-  });
-  return resource ? normalizeCollectionType(resource) : null;
+    collection_name: collectionName
+  })
+  return resource ? normalizeCollectionType(resource) : null
 }

@@ -1,9 +1,12 @@
-import { ToolInputParams, ToolReturnParams } from '../../models/types.js'
-import { updateInCollection } from '../../persistence/persistCollectionData.js'
-import { getCollectionTypeByCollectionName } from '../../persistence/persistCollectionType.js'
+import { updateInCollection } from '../../persistence/CollectionDataPersistence.js'
+import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
 import { ObjectId } from 'mongodb'
-const deleteFromCollectionSchema = {
-  name: 'delete_from_collection',
+import { getToolsTextResponse } from '../../lib/utils.js'
+import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
+import { TOOL_NAME } from '../../models/enums.js'
+
+export const deleteFromCollectionSchema = {
+  name: TOOL_NAME.DELETE_FROM_COLLECTION,
   description: "Delete documents from a collection by matching either MongoDB's _id or a custom id field",
   inputSchema: {
     type: 'object',
@@ -28,10 +31,10 @@ const deleteFromCollectionSchema = {
 
 /**
  * Tool function to delete documents from a collection based on an exact attribute match
- * @param params - Tool input parameters containing collection name, attribute, and value
+ * @param request - Tool request containing collection name, attribute, and value
  * @returns Tool return parameters with success/failure message and deletion count
  */
-async function deleteFromCollection(params: ToolInputParams): Promise<ToolReturnParams> {
+export async function deleteFromCollection(params: CallToolRequest['params']): Promise<CallToolResult> {
   console.log('deleteFromCollection', params)
   const { collection_name, attribute, value } = params.arguments ?? {}
   console.log({ collection_name, attribute, value })
@@ -39,29 +42,17 @@ async function deleteFromCollection(params: ToolInputParams): Promise<ToolReturn
   // Validate input parameters
   if (!collection_name || typeof collection_name !== 'string') {
     console.log('Invalid collection name:', collection_name)
-    return {
-      success: false,
-      type: 'text',
-      text: "'collection_name' must be present in the request params arguments"
-    }
+    return getToolsTextResponse(false, "'collection_name' must be present in the request params arguments")
   }
 
   if (attribute !== '_id' && attribute !== 'id') {
     console.log('Invalid attribute:', attribute)
-    return {
-      success: false,
-      type: 'text',
-      text: "attribute must be either '_id' or 'id'"
-    }
+    return getToolsTextResponse(false, "attribute must be either '_id' or 'id'")
   }
 
   if (value === undefined || value === null) {
     console.log('Missing value for deletion')
-    return {
-      success: false,
-      type: 'text',
-      text: "'value' must be present in the request params arguments"
-    }
+    return getToolsTextResponse(false, "'value' must be present in the request params arguments")
   }
 
   try {
@@ -69,11 +60,7 @@ async function deleteFromCollection(params: ToolInputParams): Promise<ToolReturn
     const collectionType = await getCollectionTypeByCollectionName(collection_name)
     if (!collectionType) {
       console.log('Collection not found:', collection_name)
-      return {
-        success: false,
-        type: 'text',
-        text: `Collection '${collection_name}' does not exist`
-      }
+      return getToolsTextResponse(false, `Collection '${collection_name}' does not exist`)
     }
 
     // Create query for exact match on attribute
@@ -85,19 +72,12 @@ async function deleteFromCollection(params: ToolInputParams): Promise<ToolReturn
       deleted: true
     })
 
-    return {
-      success: true,
-      type: 'text',
-      text: `Successfully deleted ${result} document${result !== 1 ? 's' : ''} from collection '${collection_name}'`
-    }
+    return getToolsTextResponse(
+      true,
+      `Successfully deleted ${result} document${result !== 1 ? 's' : ''} from collection '${collection_name}'`
+    )
   } catch (error) {
     console.log('Error deleting from collection:', error)
-    return {
-      success: false,
-      type: 'text',
-      text: `Error deleting from collection: ${error}`
-    }
+    return getToolsTextResponse(false, `Error deleting from collection: ${error}`)
   }
 }
-
-export { deleteFromCollection, deleteFromCollectionSchema }

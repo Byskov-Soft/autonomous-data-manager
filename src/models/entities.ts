@@ -28,7 +28,7 @@ export const CollectionType = z.object({
   //     name: { type: "string" },
   //     value: { type: "number" }
   //   },
-  //   required: ["id", "name"]
+  //   required: ["id", "name", "summary"]
   // }
   schema: z.object({
     type: z.literal('object'),
@@ -38,7 +38,8 @@ export const CollectionType = z.object({
           type: z.string()
         })
       })
-      .and(z.record(z.string(), z.any()))
+      .and(z.record(z.string(), z.any())),
+    required: z.array(z.string())
   }),
 
   // Timestamps for auditing

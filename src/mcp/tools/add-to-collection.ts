@@ -1,17 +1,18 @@
 import Djv from 'djv'
-import { ToolInputParams, ToolReturnParams } from '../../models/types.js'
-import { insertIntoCollection } from '../../persistence/persistCollectionData.js'
-import { getCollectionTypeByCollectionName } from '../../persistence/persistCollectionType.js'
-import { transformStringToJson } from '../../utils.js'
+import { insertIntoCollection } from '../../persistence/CollectionDataPersistence.js'
+import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
+import { getToolsTextResponse, transformStringToJson } from '../../lib/utils.js'
 import { z, ZodError } from 'zod'
 import { CollectionType } from '../../models/entities.js'
-import { getEnv } from '../env.js'
+import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
+import { getEnv } from '../../lib/env.js'
+import { TOOL_NAME } from '../../models/enums.js'
 
 const MARKDOWN_ENCOURAGEMENT =
   'Use Markdown format for better readability - use # for headers, ``` for code blocks, - for lists'
 
 export const addToCollectionSchema = {
-  name: 'add_to_collection',
+  name: TOOL_NAME.ADD_TO_COLLECTION,
   description: 'Add a document to a collection with schema validation',
   inputSchema: {
     type: 'object',
@@ -37,10 +38,10 @@ export const addToCollectionSchema = {
 
 /**
  * Tool function to add a document to a collection with schema validation
- * @param params - Tool input parameters containing collection name and document
+ * @param request - Tool request containing collection name and document
  * @returns Tool return parameters with success/failure message
  */
-export async function addToCollection(params: ToolInputParams): Promise<ToolReturnParams> {
+export async function addToCollection(params: CallToolRequest['params']): Promise<CallToolResult> {
   console.log('addToCollection', params)
 
   // Resolve the input parameters
@@ -57,11 +58,10 @@ export async function addToCollection(params: ToolInputParams): Promise<ToolRetu
     jsonDocument = transformStringToJson(document)
   } catch (error) {
     console.log('Invalid JSON in document:', error)
-    return {
-      success: false,
-      type: 'text',
-      text: `Invalid JSON in document: ${(error as Error)?.message ?? 'Unknown error'}`
-    }
+    return getToolsTextResponse(
+      false,
+      `Invalid JSON in document: ${(error as Error)?.message ?? 'Unknown error'}`
+    )
   }
 
   try {
@@ -70,11 +70,7 @@ export async function addToCollection(params: ToolInputParams): Promise<ToolRetu
 
     if (!collectionType) {
       console.log('Collection type not found:', collectionName)
-      return {
-        success: false,
-        type: 'text',
-        text: `Collection '${collectionName}' does not exist`
-      }
+      return getToolsTextResponse(false, `Collection '${collectionName}' does not exist`)
     }
 
     // Validate the document against the collection schema
@@ -90,38 +86,36 @@ export async function addToCollection(params: ToolInputParams): Promise<ToolRetu
     let hasLargeText = false
 
     for (const [key, value] of Object.entries(jsonDocument)) {
-      if (typeof value === 'string' && value.length > getEnv().LARGE_TEXT_THRESHOLD && !value.startsWith('#')) {
+      if (
+        typeof value === 'string' &&
+        value.length > getEnv().LARGE_TEXT_THRESHOLD &&
+        !value.startsWith('#')
+      ) {
         hasLargeText = true
         break
       }
     }
 
-    return {
-      success: true,
-      type: 'text',
-      text: [
+    return getToolsTextResponse(
+      true,
+      [
         `Document was added to collection '${collectionName}`,
         hasLargeText ? `(Tip: ${MARKDOWN_ENCOURAGEMENT})` : ''
-      ].join(' '),
-      object_id: ObjectId.toString()
-    }
+      ].join(' ')
+    )
   } catch (error) {
     console.log('Error adding document to collection:', error)
 
-    return {
-      success: false,
-      type: 'text',
-      text: `Error adding document to collection: ${(error as Error).message}`
-    }
+    return getToolsTextResponse(false, `Error adding document to collection: ${(error as Error).message}`)
   }
 }
 
 const resolveInputParams = (
-  params: ToolInputParams
+  params: CallToolRequest['params']
 ): {
   collectionName: string
   document: string
-  errorResponse: ToolReturnParams | null
+  errorResponse: CallToolResult | null
 } => {
   const { collection_name, document: newDocument } = params.arguments ?? {}
 
@@ -136,11 +130,10 @@ const resolveInputParams = (
       return {
         collectionName: '',
         document: '',
-        errorResponse: {
-          success: false,
-          type: 'text',
-          text: "'collection_name' and 'document' must be present in the request params arguments"
-        }
+        errorResponse: getToolsTextResponse(
+          false,
+          "'collection_name' and 'document' must be present in the request params arguments"
+        )
       }
     }
     throw error
@@ -151,7 +144,7 @@ const validateJsonDocument = (
   collectionName: string,
   jsonDocument: Record<string, unknown>,
   collectionType: CollectionType
-): ToolReturnParams | void => {
+): CallToolResult | void => {
   // Validate document against schema
   console.log('Validating JSON conformity. Schema:\n', collectionType.schema)
   const djv = Djv()
@@ -160,11 +153,7 @@ const validateJsonDocument = (
 
   if (invalid) {
     if (getEnv().COLLECTION_VALIDATION !== 'off') {
-      return {
-        success: false,
-        type: 'text',
-        text: `Document does not match schema: ${JSON.stringify(invalid)}`
-      }
+      return getToolsTextResponse(false, `Document does not match schema: ${JSON.stringify(invalid)}`)
     } else {
       // Log warning but continue if validation is disabled
       console.warn(
