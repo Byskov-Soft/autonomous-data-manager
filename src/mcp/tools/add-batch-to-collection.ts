@@ -13,7 +13,7 @@ const MARKDOWN_ENCOURAGEMENT =
 
 export const addBatchToCollectionSchema = {
   name: TOOL_NAME.ADD_BATCH_TO_COLLECTION,
-  description: 'Add multiple documents to a collection with schema validation in a single operation',
+  description: 'Add one or more documents to a collection with schema validation in a single operation',
   inputSchema: {
     type: 'object',
     properties: {

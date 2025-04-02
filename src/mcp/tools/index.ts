@@ -19,7 +19,9 @@ export const useTools = (server: Server) => {
   server.setRequestHandler(ListToolsRequestSchema, () => ({
     tools: [
       addCollectionTypeSchema,
-      addToCollectionSchema,
+      // If you only want to add one document at a time
+      // enable addToCollectionSchema and disable addBatchToCollectionSchema
+      //addToCollectionSchema,
       addBatchToCollectionSchema,
       getFromCollectionSchema,
       deleteFromCollectionSchema,
@@ -37,9 +39,11 @@ export const useTools = (server: Server) => {
         handler = addCollectionType
         break
 
-      case TOOL_NAME.ADD_TO_COLLECTION:
-        handler = addToCollection
-        break
+      // If you only want to add one document at a time
+      // enable TOOL_NAME.ADD_TO_COLLECTION and disable TOOL_NAME.ADD_BATCH_TO_COLLECTION
+      // case TOOL_NAME.ADD_TO_COLLECTION:
+      //   handler = addToCollection
+      //   break
 
       case TOOL_NAME.ADD_BATCH_TO_COLLECTION:
         handler = addBatchToCollection
