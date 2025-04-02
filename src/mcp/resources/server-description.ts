@@ -18,8 +18,8 @@ export const serverDescriptionResourceSchema: Resource = {
 /**
  * Retrieves the contents of the server description resource
  */
-export function getServerDescription(): ReadResourceResult {
-  return {
+export function getServerDescription(): Promise<ReadResourceResult> {
+  return Promise.resolve({
     contents: [
       {
         uri: 'data://server-description',
@@ -41,7 +41,7 @@ export function getServerDescription(): ReadResourceResult {
         ].join('\n')
       }
     ]
-  }
+  })
 }
 
 /**

@@ -15,22 +15,19 @@ import { getFromCollectionSchema, getFromCollection } from './get-from-collectio
 import { getResourceDataSchema, getResourceData } from './get-resource-data.js'
 
 export const useTools = (server: Server) => {
-  server.setRequestHandler(ListToolsRequestSchema, () => {
-    return {
-      tools: [
-        addCollectionTypeSchema,
-        addToCollectionSchema,
-        getFromCollectionSchema,
-        deleteFromCollectionSchema,
-        getCollectionSummarySchema,
-        getResourceDataSchema
-      ]
-    }
-  })
+  server.setRequestHandler(ListToolsRequestSchema, () => ({
+    tools: [
+      addCollectionTypeSchema,
+      addToCollectionSchema,
+      getFromCollectionSchema,
+      deleteFromCollectionSchema,
+      getCollectionSummarySchema,
+      getResourceDataSchema
+    ]
+  }))
 
   server.setRequestHandler(CallToolRequestSchema, async (request): Promise<CallToolResult> => {
     console.log('CallToolRequestSchema', request)
-
     let handler: (input: CallToolRequest['params']) => Promise<CallToolResult>
 
     switch (request.params.name) {
@@ -62,6 +59,6 @@ export const useTools = (server: Server) => {
         throw new Error('Tool not found')
     }
 
-    return await handler(request.params)
+    return handler(request.params)
   })
 }

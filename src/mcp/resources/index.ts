@@ -17,18 +17,21 @@ export const useResources = (server: Server) => {
   }))
 
   server.setRequestHandler(ReadResourceRequestSchema, async (request): Promise<ReadResourceResult> => {
+    let handler: () => Promise<ReadResourceResult>
+
     switch (request.params.uri) {
       case 'data://server-description':
-        console.log('Server description requested')
-        return getServerDescription()
+        handler = getServerDescription
+        break
 
       case 'data://collections':
-        console.log('Collections info requested')
-        return readCollectionsInfo()
+        handler = readCollectionsInfo
+        break
 
       default:
-        console.log('Resource not found')
-        return { contents: [] }
+        throw new Error('Tool not found')
     }
+
+    return handler()
   })
 }
