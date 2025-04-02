@@ -14,9 +14,9 @@ export function getToolsTextResponse(success: boolean, text: string): CallToolRe
   return {
     content: [
       {
-        success: true,
+        success,
         type: 'text',
-        text: 'Tool executed successfully'
+        text
       }
     ]
   }

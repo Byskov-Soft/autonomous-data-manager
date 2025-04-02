@@ -31,9 +31,12 @@ export async function summarizeCollection(collectionName: string): Promise<Summa
   // Get the collection
   const collection = await getDynamicCollection(collectionName)
 
-  // Fetch only id and summary fields for all documents
+  // Fetch only id and summary fields for all non-deleted documents
+  const deletedFilter = {
+    $or: [{ deleted: { $ne: true } }, { deleted: { $exists: false } }]
+  }
   const summaries = (await collection
-    .find({}, { projection: { summary: 1, _id: 1 } })
+    .find(deletedFilter, { projection: { summary: 1, _id: 1 } })
     .toArray()) as unknown as SummaryRecord[]
 
   return summaries
@@ -55,8 +58,5 @@ export async function getFormattedCollectionSummary(collectionName: string): Pro
 
   const summaryLines = summaries.map((record) => `[${record._id}]: ${record.summary}`)
 
-  return [
-    `Collection '${collectionName}' contains ${summaries.length} records:`,
-    ...summaryLines
-  ].join('\n')
+  return [`Collection '${collectionName}' contains ${summaries.length} records:`, ...summaryLines].join('\n')
 }

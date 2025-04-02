@@ -10,6 +10,7 @@ export enum COLLECTIONS {
 export enum TOOL_NAME {
   ADD_COLLECTION_TYPE = 'add_collection_type',
   ADD_TO_COLLECTION = 'add_to_collection',
+  ADD_BATCH_TO_COLLECTION = 'add_batch_to_collection',
   GET_FROM_COLLECTION = 'get_from_collection',
   DELETE_FROM_COLLECTION = 'delete_from_collection',
   COLLECTION_SUMMARY = 'collection_summary',

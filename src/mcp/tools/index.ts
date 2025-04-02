@@ -9,6 +9,7 @@ import {
 import { TOOL_NAME } from '../../models/enums.js'
 import { addCollectionTypeSchema, addCollectionType } from './add-collection-type.js'
 import { addToCollectionSchema, addToCollection } from './add-to-collection.js'
+import { addBatchToCollectionSchema, addBatchToCollection } from './add-batch-to-collection.js'
 import { deleteFromCollectionSchema, deleteFromCollection } from './delete-from-collection.js'
 import { getCollectionSummarySchema, getCollectionSummary } from './get-collection-summary.js'
 import { getFromCollectionSchema, getFromCollection } from './get-from-collection.js'
@@ -19,6 +20,7 @@ export const useTools = (server: Server) => {
     tools: [
       addCollectionTypeSchema,
       addToCollectionSchema,
+      addBatchToCollectionSchema,
       getFromCollectionSchema,
       deleteFromCollectionSchema,
       getCollectionSummarySchema,
@@ -37,6 +39,10 @@ export const useTools = (server: Server) => {
 
       case TOOL_NAME.ADD_TO_COLLECTION:
         handler = addToCollection
+        break
+
+      case TOOL_NAME.ADD_BATCH_TO_COLLECTION:
+        handler = addBatchToCollection
         break
 
       case TOOL_NAME.GET_FROM_COLLECTION:

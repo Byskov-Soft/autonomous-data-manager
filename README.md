@@ -100,3 +100,4 @@ Best practice:
 - get_resource_data
 
 Details to be added later
+
