@@ -4,6 +4,8 @@
 
 The AI Autonomous Data Manager is a specialized data management system designed to give AI agents (like those in Cursor, Cline, or other AI-enabled editors) autonomous control over dynamically structured data collections. It enables AI assistants to maintain persistent memory across conversations, organize information, and manage data without human intervention.
 
+The server was created as an excercise to learn about MCP servers. How useful it is remains to be seen. It is provided as-is under the MIT license.
+
 Key features:
 - AI-driven collection creation with automatic schema validation
 - Autonomous CRUD operations by AI agents
