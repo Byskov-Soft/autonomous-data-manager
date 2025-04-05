@@ -1,0 +1,1 @@
+{"root":["./src/front-end/App.tsx","./src/front-end/main.tsx","./src/front-end/components/ViewCollection.tsx","./src/front-end/hooks/useCollectionEntries.ts","./src/front-end/hooks/useCollectionTypes.ts","./src/front-end/pages/CollectionsPage.tsx"],"version":"5.8.2"}

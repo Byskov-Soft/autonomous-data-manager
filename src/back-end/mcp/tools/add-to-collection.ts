@@ -3,7 +3,7 @@ import { insertIntoCollection } from '../../persistence/CollectionDataPersistenc
 import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
 import { getToolsTextResponse, transformStringToJson } from '../../lib/utils.js'
 import { z, ZodError } from 'zod'
-import { CollectionType } from '../../models/entities.js'
+import { CollectionType } from '../../../shared/models/entities.js'
 import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
 import { getEnv } from '../../lib/env.js'
 import { TOOL_NAME } from '../../models/enums.js'

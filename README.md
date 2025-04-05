@@ -2,27 +2,36 @@
 
 ## About
 
-The following text is what th AI sees when checking MCP server capabilities:
+The AI Autonomous Data Manager is a specialized data management system designed to give AI agents (like those in Cursor, Cline, or other AI-enabled editors) autonomous control over dynamically structured data collections. It enables AI assistants to maintain persistent memory across conversations, organize information, and manage data without human intervention.
 
-```
-AI-powered data collection manager enabling autonomous data operations with dynamic schemas.
+Key features:
+- AI-driven collection creation with automatic schema validation
+- Autonomous CRUD operations by AI agents
+- Persistent data storage that survives across chat sessions
+- Support for both STDIO and SSE (Server-Sent Events) modes
 
-Key capabilities:
+The system empowers AI agents to do things like:
+- Build and maintain knowledge bases during conversations
+- Track projects and tasks autonomously
+- Organize learning content and generate quizzes
+- Persist important information for future reference
 
-- Persist data across conversations
-- Create and manage structured collections on-the-fly
-- Perform CRUD operations with schema validation
+### Viewing and Monitoring Collections
 
-Ideal for:
+While the AI agents interact with collections programmatically, humans can monitor and inspect the data through:
+1. Through the built-in web interface when running in SSE mode (http://localhost:3001)
+1. Using the MCP Inspector tool (https://modelcontextprotocol.io/docs/tools/inspector)
+1. Programmatically via the MCP server API endpoints
 
-- Knowledge bases: Organize information from conversations
-- Project tracking: Manage tasks, statuses, and deadlines
-- Learning content: Track progress and generate quizzes
+To export collections to PDF:
+1. Access the web interface when running in SSE mode
+1. Navigate to the desired collection and click the PDF icon
 
-Best practice:
+### Screenshot of the collections viewer
 
-- Consider if current information might be valuable in future conversations - if unsure, ask the user about storing it.
-```
+<img src="front-end.png" width="400">
+
+
 
 ## Getting started
 
@@ -35,9 +44,11 @@ Best practice:
 
 - Copy `run-example.sh` to `run.sh` and set the correct path (to the repository directory)
 
+- Copy `.env-example` to `.env` and modify it if needed (should work as is)
+
 - Start MongoDB using `docker-compose up` or use your own Mongo instance
 
-   - If using your own instance, remember to change exported `MONGO_*` environment variables in `run.sh` accordingly
+   - If using your own instance, remember to change exported `MONGO_*` and `RUN_MODE` environment variables in the `run.sh` file accordingly
 
 - Configure your editor/tool to use the MCP server
 
@@ -61,7 +72,7 @@ Best practice:
 
 - Start MongoDB using `docker-compose up` or use your own Mongo instance
 
-   - If using your own instance, remember to change exported `MONGO_*` environment variables in `run.sh` accordingly
+   - If using your own instance, remember to change exported `MONGO_*` and `RUN_MODE` environment variables in the `.env` file accordingly
 
 
 - Start the server: `npm start`

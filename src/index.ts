@@ -1,8 +1,15 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-import { getEnv } from './lib/env.js'
-import { useResources } from './mcp/resources/index.js'
-import { useTools } from './mcp/tools/index.js'
-import { applyTransport } from './mcp/transports/index.js'
+import { Express } from 'express'
+import { getEnv } from './back-end/lib/env.js'
+import { useResources } from './back-end/mcp/resources/index.js'
+import { useTools } from './back-end/mcp/tools/index.js'
+import { useSseServerTransport } from './back-end/mcp/transports/sse-server-transport.js'
+import { useStdioServerTransport } from './back-end/mcp/transports/stdio-server-transport.js'
+import { SERVER_MODE } from './back-end/models/enums.js'
+import { applyApi } from './back-end/api/index.js'
+import { serveExpressApp } from './back-end/lib/express-app.js'
+
+const { RUN_MODE, SSE_MODE_HOST, SSE_MODE_PORT } = getEnv()
 
 // Initialize server
 const server = new Server(
@@ -14,7 +21,6 @@ const server = new Server(
       'Consider saving useful information for future reference.'
   },
   {
-    // Enable capabilities
     capabilities: {
       resources: {},
       tools: {}
@@ -26,5 +32,16 @@ const server = new Server(
 useResources(server)
 useTools(server)
 
-// Start the server
-applyTransport(server, getEnv().RUN_MODE)
+// Run SSE or STDIO server
+if (RUN_MODE === SERVER_MODE.SSE) {
+  const applyRoutes = (app: Express) => {
+    // General API endpoints
+    applyApi(app)
+    // MCP SSE transport + endpoints
+    useSseServerTransport(server, app)
+  }
+  const streamingUris = ['/sse', '/messages']
+  serveExpressApp(SSE_MODE_HOST, SSE_MODE_PORT, applyRoutes, streamingUris)
+} else {
+  useStdioServerTransport(server)
+}

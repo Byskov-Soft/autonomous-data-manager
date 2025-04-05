@@ -1,5 +1,5 @@
 import { Collection } from 'mongodb'
-import { CollectionType } from '../models/entities.js'
+import { CollectionType } from '../../shared/models/entities.js'
 import { useDatabase } from '../lib/database.js'
 import { COLLECTIONS } from '../models/enums.js'
 
@@ -13,11 +13,7 @@ function normalizeCollectionType(record: unknown): CollectionType {
       // We don't modify the schema field here, just validate it can be parsed
       CollectionType.parse(record)
     } catch (error) {
-      console.error(
-        'Invalid schema for collection-type record:',
-        JSON.stringify(record, null, 2),
-        error
-      )
+      console.error('Invalid schema for collection-type record:', JSON.stringify(record, null, 2), error)
     }
   } else {
     console.error('Invalid collection-type:', record)

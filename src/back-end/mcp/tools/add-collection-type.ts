@@ -1,5 +1,5 @@
 import { createCollectionType } from '../../persistence/CollectionTypePersistence.js'
-import { CollectionType } from '../../models/entities.js'
+import { CollectionType } from '../../../shared/models/entities.js'
 import { transformStringToJson, getToolsTextResponse } from '../../lib/utils.js'
 import { getDynamicCollection } from '../../persistence/CollectionDataPersistence.js'
 import { z } from 'zod'

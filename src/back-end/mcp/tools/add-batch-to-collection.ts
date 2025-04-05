@@ -3,7 +3,7 @@ import { insertIntoCollection } from '../../persistence/CollectionDataPersistenc
 import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
 import { getToolsTextResponse, transformStringToJson } from '../../lib/utils.js'
 import { z, ZodError } from 'zod'
-import { CollectionType } from '../../models/entities.js'
+import { CollectionType } from '../../../shared/models/entities.js'
 import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
 import { getEnv } from '../../lib/env.js'
 import { TOOL_NAME } from '../../models/enums.js'
@@ -28,6 +28,8 @@ export const addBatchToCollectionSchema = {
           "Each document must match the collection's schema. To ensure successful saving,",
           'always provide data to the MCP server in valid JSON format, remembering',
           'to properly escape special characters within string values.',
+          'If you have trouble inserting multiple documents due to errors, try inserting',
+          'a single document until you get it right, then add the rest.',
           'When adding large text values, it is encouraged to ' + MARKDOWN_ENCOURAGEMENT
         ].join(' ')
       }

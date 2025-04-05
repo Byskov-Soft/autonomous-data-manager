@@ -1,12 +1,11 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js'
-import express from 'express'
+import { Express } from 'express'
 import { getEnv } from '../../lib/env.js'
 
-export const useSseServerTransport = (server: Server) => {
+export const useSseServerTransport = (server: Server, app: Express) => {
   console.log(`Starting server in SSE mode`)
   const env = getEnv()
-  const app = express()
   const activeTransports: { [sessionId: string]: SSEServerTransport } = {}
 
   // Configure keep-alive interval (15 seconds)
@@ -67,9 +66,5 @@ export const useSseServerTransport = (server: Server) => {
     } else {
       res.status(404).json({ error: 'No active SSE connection for this session' })
     }
-  })
-
-  app.listen(env.SSE_MODE_PORT, env.SSE_MODE_HOST, () => {
-    console.log(`Server is running on http://${env.SSE_MODE_HOST}:${env.SSE_MODE_PORT}`)
   })
 }

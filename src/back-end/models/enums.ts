@@ -1,4 +1,4 @@
-export enum RUN_MODE {
+export enum SERVER_MODE {
   SSE = 'sse',
   STDIO = 'stdio'
 }
