@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 import { getCollectionTypeById } from '../persistence/CollectionTypePersistence.js'
 import { getDataFromCollection } from '../persistence/CollectionDataPersistence.js'
 import { generateCollectionPdf } from '../lib/pdf.js'
+import { generateCollectionPdf } from '../lib/recordToPdf.js'
 
 interface ExportParams {
   collectionTypeId: string
@@ -56,8 +57,7 @@ export const exportCollection: RequestHandler<ExportParams> = async (req, res, n
 
     const records = result.records || []
 
-    // Generate and send the PDF
-    generateCollectionPdf({
+    await generateCollectionPdf({
       collectionType,
       records,
       res

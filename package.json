@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/djv": "^2.1.4",
     "@types/express": "^5.0.1",
+    "@types/markdown-pdf": "^9.0.5",
     "@types/node": "^22.13.14",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",
@@ -42,6 +43,7 @@
     "marked": "^15.0.7",
     "mongodb": "^6.15.0",
     "pdfkit": "^0.16.0",
+    "puppeteer": "^24.6.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-markdown": "^10.1.0",
