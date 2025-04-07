@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express'
 import { getCollectionTypeById } from '../persistence/CollectionTypePersistence.js'
 import { getDataFromCollection } from '../persistence/CollectionDataPersistence.js'
-import { generateCollectionPdf } from '../lib/pdf.js'
 import { generateCollectionPdf } from '../lib/recordToPdf.js'
 
 interface ExportParams {
