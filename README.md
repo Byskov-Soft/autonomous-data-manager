@@ -106,7 +106,7 @@ To export collections to PDF:
 ## Available tools
 
 - add_collection_type
-- add_to_collection
+- add_batch_to_collection
 - get_from_collection
 - delete_from_collection
 - collection_summary
