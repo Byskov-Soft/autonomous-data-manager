@@ -12,6 +12,8 @@ import {
 } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
+import ExpandMore from '@mui/icons-material/SwapVerticalCircle'
+import ExpandLess from '@mui/icons-material/SwapVerticalCircleOutlined'
 import { useCollectionTypes } from '../hooks/useCollectionTypes.js'
 import { useCollectionExport } from '../hooks/useCollectionExport.js'
 import { ViewCollection } from './ViewCollection.js'
@@ -19,8 +21,13 @@ import { ViewCollection } from './ViewCollection.js'
 export const CollectionsPage = () => {
   const { collectionTypes, isLoading: typesLoading, error: typesError, refetch } = useCollectionTypes()
   const [selectedCollection, setSelectedCollection] = useState<string>('')
+  const [expandCollection, setExpandCollection] = useState<boolean>(false)
 
   const selectedType = collectionTypes.find((ct) => ct.collection_name === selectedCollection)
+
+  const toggleCollectionDataView = () => {
+    setExpandCollection(!expandCollection)
+  }
 
   const { exportToPdf, isExporting } = useCollectionExport({
     collectionId: selectedType?.id || ''
@@ -83,14 +90,23 @@ export const CollectionsPage = () => {
               <Typography variant="h5" gutterBottom>
                 Collection Data
               </Typography>
-              <Tooltip title="Export to PDF">
+              <Tooltip title="Export to PDF" placement={'top'}>
                 <IconButton onClick={() => exportToPdf()} disabled={isExporting} size="small">
                   <PictureAsPdfIcon />
                 </IconButton>
               </Tooltip>
+              <Tooltip title={expandCollection ? 'Close All' : 'Open All'} placement={'top'}>
+                <IconButton onClick={toggleCollectionDataView} size="small">
+                  {expandCollection ? <ExpandLess /> : <ExpandMore />}
+                </IconButton>
+              </Tooltip>
             </Box>
 
-            <ViewCollection collectionName={selectedCollection} schema={selectedType?.schema} />
+            <ViewCollection
+              collectionName={selectedCollection}
+              schema={selectedType?.schema}
+              expanded={expandCollection}
+            />
           </Box>
         )}
       </Box>

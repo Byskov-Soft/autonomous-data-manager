@@ -13,9 +13,11 @@ import CloseIcon from '@mui/icons-material/Close'
 import ReactMarkdown from 'react-markdown'
 import { useCollectionEntries } from '../hooks/useCollectionEntries.js'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import { useEffect, useState } from 'react'
 
 interface ViewCollectionProps {
   collectionName: string
+  expanded: boolean
   schema?: {
     type: string
     properties: {
@@ -28,8 +30,26 @@ interface ViewCollectionProps {
   }
 }
 
-export const ViewCollection = ({ collectionName, schema }: ViewCollectionProps) => {
+export const ViewCollection = ({ collectionName, expanded, schema }: ViewCollectionProps) => {
   const { entries, isLoading, error } = useCollectionEntries(collectionName)
+  const [expandedPanels, setExpandedPanels] = useState<{ [key: string]: boolean }>({})
+
+  useEffect(() => {
+    // Update all panels when the expanded prop changes
+    const newExpandedState = entries.reduce((acc, entry, index) => {
+      const panelId = entry._id || `panel-${index}`
+      acc[panelId] = expanded
+      return acc
+    }, {} as { [key: string]: boolean })
+    setExpandedPanels(newExpandedState)
+  }, [expanded, entries])
+
+  const handleAccordionChange = (panelId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpandedPanels((prev) => ({
+      ...prev,
+      [panelId]: isExpanded
+    }))
+  }
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -175,47 +195,60 @@ export const ViewCollection = ({ collectionName, schema }: ViewCollectionProps) 
 
   return (
     <Box>
-      {entries.map((entry, entryIndex) => (
-        <Accordion key={entry._id || entryIndex} sx={{ mb: 1 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="bold" sx={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-              {getEntryTitle(entry)}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ maxWidth: '100%', overflowX: 'hidden' }}>
-            {Object.entries(entry).map(([key, value]) => {
-              const propertyName = renderPropertyName(key)
-              if (!propertyName) return null // Skip _id field
-              return (
-                <Box key={key} sx={{ mb: 2, width: '100%', maxWidth: '100%' }}>
-                  {propertyName}
-                  <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>{renderValue(value)}</Box>
-                </Box>
-              )
-            })}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 1 }}>
-              <IconButton onClick={scrollToTop} size="small" aria-label="scroll to top" title="Scroll to top">
-                <ArrowUpwardIcon />
-              </IconButton>
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation()
-                  const accordionEl = e.currentTarget.closest('.MuiAccordion-root') as HTMLElement
-                  if (accordionEl) {
-                    const summary = accordionEl.querySelector('.MuiAccordionSummary-root') as HTMLElement
-                    if (summary) summary.click()
-                  }
-                }}
-                size="small"
-                aria-label="close entry"
-                title="Close entry"
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-      ))}
+      {entries.map((entry, entryIndex) => {
+        const panelId = entry._id || `panel-${entryIndex}`
+        return (
+          <Accordion
+            key={panelId}
+            sx={{ mb: 1 }}
+            expanded={expandedPanels[panelId] ?? false}
+            onChange={handleAccordionChange(panelId)}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography fontWeight="bold" sx={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                {getEntryTitle(entry)}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ maxWidth: '100%', overflowX: 'hidden' }}>
+              {Object.entries(entry).map(([key, value]) => {
+                const propertyName = renderPropertyName(key)
+                if (!propertyName) return null // Skip _id field
+                return (
+                  <Box key={key} sx={{ mb: 2, width: '100%', maxWidth: '100%' }}>
+                    {propertyName}
+                    <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>{renderValue(value)}</Box>
+                  </Box>
+                )
+              })}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 1 }}>
+                <IconButton
+                  onClick={scrollToTop}
+                  size="small"
+                  aria-label="scroll to top"
+                  title="Scroll to top"
+                >
+                  <ArrowUpwardIcon />
+                </IconButton>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const accordionEl = e.currentTarget.closest('.MuiAccordion-root') as HTMLElement
+                    if (accordionEl) {
+                      const summary = accordionEl.querySelector('.MuiAccordionSummary-root') as HTMLElement
+                      if (summary) summary.click()
+                    }
+                  }}
+                  size="small"
+                  aria-label="close entry"
+                  title="Close entry"
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        )
+      })}
     </Box>
   )
 }
