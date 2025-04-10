@@ -15,10 +15,11 @@ const COLLECTION_TYPE_TOOL_DESCRIPTION = [
 const COLLECTION_TYPE_PARAM_DESCRIPTION = [
   'Add a collection type to the database with a defined schema.',
   "The 'collection' parameter must be a JSON string (not an object)",
-  'containing the collection definition with:',
-  'id, name, collection_name, description, and schema properties.',
-  'The schema property should follow JSON Schema format with type, properties, and required fields.',
+  'including the following properties: id, name, collection_name, description, and schema."',
+  'The schema property should follow the JSON Schema format defined by: type, properties and required attributes.',
   'The schema properties must include a "summary" field of type string.',
+  'Only the "summary" field is mandatory. Using an "id" field is optional as "_id" UUIDs are auto generated.',
+  'However, it is good to include "id" as deletion can only be done by "_id" or "id".',
   'Example: {"collection": "{"id":"products","name":"Products","collection_name":"products",',
   '"schema":{"type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},',
   '"summary":{"type":"string"}},"required":["id","name","summary"]}}}'
