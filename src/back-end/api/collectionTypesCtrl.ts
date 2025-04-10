@@ -1,7 +1,7 @@
 import { Request, Response, RequestHandler } from 'express'
 import { useDatabase } from '../lib/database.js'
 import { z } from 'zod'
-import { CollectionType } from '../../shared/models/entities.js'
+import { CollectionType } from '../models/entities.js'
 
 /**
  * Schema for the projected collection type data

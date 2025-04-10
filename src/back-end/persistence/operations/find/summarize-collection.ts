@@ -1,5 +1,5 @@
-import { getDynamicCollection } from './CollectionDataPersistence.js'
-import { getCollectionTypeByCollectionName } from './CollectionTypePersistence.js'
+import { getCollectionTypeByCollectionName } from '../../collection-types.js'
+import { getDynamicCollection } from '../common.js'
 
 interface SummaryRecord {
   _id: string

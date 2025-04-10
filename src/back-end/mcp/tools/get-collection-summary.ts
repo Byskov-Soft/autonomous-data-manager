@@ -1,4 +1,4 @@
-import { getFormattedCollectionSummary } from '../../persistence/SummarizerPersistence.js'
+import { getFormattedCollectionSummary } from '../../persistence/operations/find/summarize-collection.js'
 import { getToolsTextResponse } from '../../lib/utils.js'
 import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
 import { TOOL_NAME } from '../../models/enums.js'

@@ -1,12 +1,13 @@
 import Djv from 'djv'
-import { insertIntoCollection } from '../../persistence/CollectionDataPersistence.js'
-import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
+
+import { getCollectionTypeByCollectionName } from '../../persistence/collection-types.js'
 import { getToolsTextResponse, transformStringToJson } from '../../lib/utils.js'
 import { z, ZodError } from 'zod'
-import { CollectionType } from '../../../shared/models/entities.js'
+import { CollectionType } from '../../models/entities.js'
 import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
 import { getEnv } from '../../lib/env.js'
 import { TOOL_NAME } from '../../models/enums.js'
+import { insertIntoCollection } from '../../persistence/index.js'
 
 const MARKDOWN_ENCOURAGEMENT =
   'Use Markdown format for better readability - use # for headers, ``` for code blocks, - for lists'

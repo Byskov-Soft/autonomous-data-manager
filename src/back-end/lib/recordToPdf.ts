@@ -1,5 +1,5 @@
 import { Response } from 'express'
-import { CollectionType } from '../../shared/models/entities.js'
+import { CollectionType } from '../models/entities.js'
 import puppeteer from 'puppeteer'
 import { writeFile } from 'fs/promises'
 import { createReadStream } from 'fs'

@@ -1,4 +1,4 @@
-import { getDataFromCollection } from '../../persistence/CollectionDataPersistence.js'
+import { queryCollection } from '../../persistence/index.js'
 import { getToolsTextResponse } from '../../lib/utils.js'
 import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
 import { TOOL_NAME } from '../../models/enums.js'
@@ -70,7 +70,7 @@ export async function getFromCollection(params: CallToolRequest['params']): Prom
 
   try {
     // Query the database based on type
-    const results = await getDataFromCollection({
+    const results = await queryCollection({
       collectionName: collection_name,
       queryType: type,
       attribute: attribute as string | undefined,

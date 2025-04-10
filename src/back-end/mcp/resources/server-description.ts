@@ -1,6 +1,6 @@
 import { ReadResourceResult, Resource } from '@modelcontextprotocol/sdk/types.js'
-import { getAllCollectionTypes, deleteCollectionType } from '../../persistence/CollectionTypePersistence.js'
-import { getDynamicCollection } from '../../persistence/CollectionDataPersistence.js'
+import { getAllCollectionTypes, deleteCollectionType } from '../../persistence/collection-types.js'
+import { getDynamicCollection } from '../../persistence/index.js'
 
 /**
  * Server description resource info

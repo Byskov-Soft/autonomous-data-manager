@@ -1,5 +1,5 @@
 import { Collection } from 'mongodb'
-import { CollectionType } from '../../shared/models/entities.js'
+import { CollectionType } from '../models/entities.js'
 import { useDatabase } from '../lib/database.js'
 import { COLLECTIONS } from '../models/enums.js'
 
@@ -114,7 +114,7 @@ export async function deleteCollectionType(id: string): Promise<boolean> {
  * @param collectionName The collection name to check
  * @returns Promise resolving to true if exists, false otherwise
  */
-export async function CollectionTypeExists(collectionName: string): Promise<boolean> {
+export async function collectionTypeExists(collectionName: string): Promise<boolean> {
   const collection = await getCollectionType()
   const count = await collection.countDocuments({
     collection_name: collectionName

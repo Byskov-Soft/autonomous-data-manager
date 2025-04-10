@@ -12,6 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "declaration": true
   },
-  "include": ["src/back-end/**/*", "src/index.ts", "src/shared/models/entities.ts"],
+  "include": ["src/back-end/**/*", "src/index.ts", "src/back-end/models/entities.ts"],
   "exclude": ["node_modules", "dist"]
 }

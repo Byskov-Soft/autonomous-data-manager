@@ -5,6 +5,7 @@ export const useCollectionEntries = (collectionName: string | null) => {
   const [entries, setEntries] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
+
   useEffect(() => {
     const fetchEntries = async () => {
       if (!collectionName) {
@@ -17,9 +18,11 @@ export const useCollectionEntries = (collectionName: string | null) => {
 
       try {
         const response = await fetch(`/api/collections/${collectionName}/entries`)
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
+
         const data = await response.json()
         setEntries(data.entries)
       } catch (err) {

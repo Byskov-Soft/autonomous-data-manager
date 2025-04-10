@@ -32,16 +32,16 @@ const server = new Server(
 useResources(server)
 useTools(server)
 
-// Run SSE or STDIO server
 if (RUN_MODE === SERVER_MODE.SSE) {
+  // SSE events (HTTP streaming)
   const applyRoutes = (app: Express) => {
-    // General API endpoints
     applyApi(app)
-    // MCP SSE transport + endpoints
     useSseServerTransport(server, app)
   }
+
   const streamingUris = ['/sse', '/messages']
   serveExpressApp(SSE_MODE_HOST, SSE_MODE_PORT, applyRoutes, streamingUris)
 } else {
+  // STDIO (streaming from/to stdin and stdout)
   useStdioServerTransport(server)
 }

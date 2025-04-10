@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express'
-import { getCollectionTypeById } from '../persistence/CollectionTypePersistence.js'
-import { getDataFromCollection } from '../persistence/CollectionDataPersistence.js'
 import { generateCollectionPdf } from '../lib/recordToPdf.js'
+import { getCollectionTypeById, queryCollection } from '../persistence/index.js'
 
 interface ExportParams {
   collectionTypeId: string
@@ -48,7 +47,7 @@ export const exportCollection: RequestHandler<ExportParams> = async (req, res, n
     }
 
     // Fetch all documents from the collection
-    const result = await getDataFromCollection({
+    const result = await queryCollection({
       collectionName: collectionType.collection_name,
       queryType: 'range',
       limit: 0 // 0 means no limit

@@ -1,6 +1,5 @@
-import { Request, Response, RequestHandler } from 'express'
-import { getDataFromCollection } from '../persistence/CollectionDataPersistence.js'
-import { getCollectionTypeByCollectionName } from '../persistence/CollectionTypePersistence.js'
+import { RequestHandler } from 'express'
+import { getCollectionTypeByCollectionName, queryCollection } from '../persistence/index.js'
 
 /**
  * Retrieves all entries from a specific collection
@@ -29,7 +28,7 @@ export const getCollectionEntries: RequestHandler = async (req, res, next) => {
     }
 
     // Get all entries from the collection
-    const result = await getDataFromCollection({
+    const result = await queryCollection({
       collectionName,
       queryType: 'range',
       limit: 100 // Set a reasonable limit for initial implementation

@@ -2,8 +2,8 @@ import { CallToolRequest, CallToolResult } from '@modelcontextprotocol/sdk/types
 import { ObjectId } from 'mongodb'
 import { getToolsTextResponse } from '../../lib/utils.js'
 import { TOOL_NAME } from '../../models/enums.js'
-import { updateInCollection } from '../../persistence/CollectionDataPersistence.js'
-import { getCollectionTypeByCollectionName } from '../../persistence/CollectionTypePersistence.js'
+import { updateInCollection } from '../../persistence/index.js'
+import { getCollectionTypeByCollectionName } from '../../persistence/collection-types.js'
 
 export const deleteFromCollectionSchema = {
   name: TOOL_NAME.DELETE_FROM_COLLECTION,

@@ -8,7 +8,6 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import { TOOL_NAME } from '../../models/enums.js'
 import { addCollectionTypeSchema, addCollectionType } from './add-collection-type.js'
-import { addToCollectionSchema, addToCollection } from './add-to-collection.js'
 import { addBatchToCollectionSchema, addBatchToCollection } from './add-batch-to-collection.js'
 import { deleteFromCollectionSchema, deleteFromCollection } from './delete-from-collection.js'
 import { getCollectionSummarySchema, getCollectionSummary } from './get-collection-summary.js'
