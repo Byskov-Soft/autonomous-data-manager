@@ -1,4 +1,4 @@
-import { getDynamicCollection, validateCollection, createBaseQuery } from '../common.js'
+import { createBaseQuery, getDynamicCollection, validateCollection } from '../common.js'
 
 /**
  * Retrieves data from a collection based on query parameters
@@ -22,6 +22,8 @@ export async function queryCollection({
   const collection = await getDynamicCollection(collectionName)
   const baseFilter = createBaseQuery()
 
+  // Todo: Sort by order field
+
   switch (queryType) {
     case 'count':
       const count = await collection.countDocuments(baseFilter)
@@ -30,7 +32,7 @@ export async function queryCollection({
     case 'range':
       const rangeRecords = await collection
         .find(baseFilter)
-        .sort({ _id: -1 })
+        .sort({ order: 1, _id: -1 }) // Sort by order ascending, then _id desc
         .limit(limit || 30)
         .toArray()
       return { records: rangeRecords }
@@ -42,6 +44,7 @@ export async function queryCollection({
       }
       const valueRecords = await collection
         .find(valueQuery)
+        .sort({ order: 1 }) // Sort by order ascending
         .limit(limit || 30)
         .toArray()
       return { records: valueRecords }
@@ -53,6 +56,7 @@ export async function queryCollection({
       }
       const exactRecords = await collection
         .find(exactQuery)
+        .sort({ order: 1 }) // Sort by order ascending
         .limit(limit || 30)
         .toArray()
       return { records: exactRecords }

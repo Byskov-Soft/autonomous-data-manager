@@ -24,6 +24,7 @@ export const CollectionType = z.object({
   //   type: "object",
   //   properties: {
   //     summary: { type: "string" },
+  //     order: { type: "number" },
   //     id: { type: "string" },
   //     name: { type: "string" },
   //     value: { type: "number" }
@@ -35,7 +36,10 @@ export const CollectionType = z.object({
     properties: z
       .object({
         summary: z.object({
-          type: z.string()
+          type: z.literal('string')
+        }),
+        order: z.object({
+          type: z.literal('number')
         })
       })
       .and(z.record(z.string(), z.any())),

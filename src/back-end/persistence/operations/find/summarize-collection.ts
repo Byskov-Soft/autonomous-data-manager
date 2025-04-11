@@ -22,7 +22,7 @@ export async function summarizeCollection(collectionName: string): Promise<Summa
     throw new Error(`Collection '${collectionName}' does not exist in registry`)
   }
 
-  // Verify schema requires id and summary fields
+  // Verify schema requires order and summary fields
   const schema = collectionType.schema
   if (!schema.required?.includes('summary')) {
     throw new Error(`Collection '${collectionName}' schema must include a 'summary' property`)
@@ -31,12 +31,16 @@ export async function summarizeCollection(collectionName: string): Promise<Summa
   // Get the collection
   const collection = await getDynamicCollection(collectionName)
 
-  // Fetch only id and summary fields for all non-deleted documents
+  // Fetch only _id and summary fields for all non-deleted documents
   const deletedFilter = {
     $or: [{ deleted: { $ne: true } }, { deleted: { $exists: false } }]
   }
+
+  // Todo: Sort by order field
+
   const summaries = (await collection
     .find(deletedFilter, { projection: { summary: 1, _id: 1 } })
+    .sort({ order: 1 }) // Sort by order ascending
     .toArray()) as unknown as SummaryRecord[]
 
   return summaries

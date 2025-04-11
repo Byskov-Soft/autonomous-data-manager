@@ -13,19 +13,18 @@ import { deleteFromCollectionSchema, deleteFromCollection } from './delete-from-
 import { getCollectionSummarySchema, getCollectionSummary } from './get-collection-summary.js'
 import { getFromCollectionSchema, getFromCollection } from './get-from-collection.js'
 import { getResourceDataSchema, getResourceData } from './get-resource-data.js'
+import { getNextInOrderSequenceSchema, getNextInOrderSequence } from './get-next-in-order-sequence.js'
 
 export const useTools = (server: Server) => {
   server.setRequestHandler(ListToolsRequestSchema, () => ({
     tools: [
       addCollectionTypeSchema,
-      // If you only want to add one document at a time
-      // enable addToCollectionSchema and disable addBatchToCollectionSchema
-      //addToCollectionSchema,
       addBatchToCollectionSchema,
       getFromCollectionSchema,
       deleteFromCollectionSchema,
       getCollectionSummarySchema,
-      getResourceDataSchema
+      getResourceDataSchema,
+      getNextInOrderSequenceSchema
     ]
   }))
 
@@ -62,6 +61,10 @@ export const useTools = (server: Server) => {
 
       case TOOL_NAME.GET_RESOURCE_DATA:
         handler = getResourceData
+        break
+
+      case TOOL_NAME.GET_NEXT_IN_ORDER_SEQUENCE:
+        handler = getNextInOrderSequence
         break
 
       default:

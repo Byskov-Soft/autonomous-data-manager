@@ -17,12 +17,14 @@ const COLLECTION_TYPE_PARAM_DESCRIPTION = [
   "The 'collection' parameter must be a JSON string (not an object)",
   'including the following properties: id, name, collection_name, description, and schema."',
   'The schema property should follow the JSON Schema format defined by: type, properties and required attributes.',
-  'The schema properties must include a "summary" field of type string.',
-  'Only the "summary" field is mandatory. Using an "id" field is optional as "_id" UUIDs are auto generated.',
+  'The schema properties must include a "summary" field of type string and a "order" field of type number.',
+  'The order value must be increased with 1 for every document insert. Query results are sorted by the order field.',
+  `If you don't know it, get the next order number from the get_next_in_order_sequence tool.`,
+  'Using an "id" field is optional as "_id" UUIDs are auto generated.',
   'However, it is good to include "id" as deletion can only be done by "_id" or "id".',
   'Example: {"collection": "{"id":"products","name":"Products","collection_name":"products",',
-  '"schema":{"type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},',
-  '"summary":{"type":"string"}},"required":["id","name","summary"]}}}'
+  '"schema":{"type":"object","properties":{"id":{"type":"string"},"order": { "type": "number" },"name":{"type":"string"},',
+  '"summary":{"type":"string"}},"required":["id","order","name","summary"]}}}'
 ].join(' ')
 
 const COLLECTION_TYPE_EXAMPLE_RECORD = `
@@ -35,6 +37,7 @@ const COLLECTION_TYPE_EXAMPLE_RECORD = `
     "type": "object",
     "properties": {
       "id": { "type": "string" },
+      "order": { "type": "number" },
       "summary": {
         "type": "string",
         "description": "A concise description of the topic and conclusion"
@@ -44,7 +47,7 @@ const COLLECTION_TYPE_EXAMPLE_RECORD = `
       "description": { "type": "string" },
       "inStock": { "type": "boolean" }
     },
-    "required": ["id", "name", "price", "summary"]
+    "required": ["id", "order", "name", "price", "summary"]
   }
 }
 `
@@ -100,10 +103,12 @@ export async function addCollectionType(params: CallToolRequest['params']): Prom
   // Validate the collection schema
   try {
     collectionType = CollectionType.parse(jsonCollection)
-  } catch {
+  } catch (e) {
+    console.log('ERROR', e)
+
     return getToolsTextResponse(
       false,
-      "collectionType is invalid. Did you remember to include a 'summary' field of type string?"
+      "collectionType is invalid. Did you remember to include 'summary' (string) and 'order' (number) fields?"
     )
   }
 

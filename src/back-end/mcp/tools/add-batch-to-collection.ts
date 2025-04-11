@@ -29,6 +29,7 @@ export const addBatchToCollectionSchema = {
           "Each document must match the collection's schema. To ensure successful saving,",
           'always provide data to the MCP server in valid JSON format, remembering',
           'to properly escape special characters within string values.',
+          'Insert documents using the order field to indicate reading order.',
           'If you have trouble inserting multiple documents due to errors, try inserting',
           'a single document until you get it right, then add the rest.',
           'When adding large text values, it is encouraged to ' + MARKDOWN_ENCOURAGEMENT
