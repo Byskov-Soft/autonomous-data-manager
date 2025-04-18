@@ -6,7 +6,11 @@ import { createReadStream } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
 import { marked } from 'marked'
+import { useLogger } from './logger.js'
 
+// Helper function to get the title of an entry
+// It tries to find a title field in the entry using title, name, id, summary, description
+// If no title field is found, it uses the first 40 characters of the first available string field
 const getEntryTitle = (entry: Record<string, any>): string => {
   // Common title field names to check
   const titleFields = ['title', 'name', 'id', 'summary', 'description']
@@ -30,6 +34,7 @@ const getEntryTitle = (entry: Record<string, any>): string => {
   return 'Untitled Entry'
 }
 
+// Generate HTML from a record
 const getHtml = (record: Record<string, unknown>): string => {
   const items: string[] = []
 
@@ -56,6 +61,7 @@ interface GeneratePdfOptions {
   res: Response
 }
 
+// Generate a PDF from a collection of records
 export const generateCollectionPdf = async ({
   collectionType,
   records,
@@ -142,7 +148,7 @@ export const generateCollectionPdf = async ({
     // Stream the PDF to response
     createReadStream(tempPdf).pipe(res)
   } catch (error) {
-    console.error('Error generating PDF:', error)
+    useLogger().error('Error generating PDF:', error)
     throw error
   }
 }

@@ -1,10 +1,11 @@
 import { z } from 'zod'
+import { useLogger } from './logger.js'
 
 // Define the schema for environment variables
 export const EnvVars = z.object({
   // Misc
   LARGE_TEXT_THRESHOLD: z.coerce.number().default(500),
-
+  LOG_LEVEL: z.enum(['info', 'debug', 'warn', 'error']).default('info'),
   // MongoDB connection details
   MONGO_URI: z.string().url(),
   MONGO_DB_NAME: z.string(),
@@ -30,7 +31,7 @@ export function getEnv(): EnvVars {
   try {
     return EnvVars.parse(process.env)
   } catch (error) {
-    console.error('❌ Invalid environment variables:', error)
+    useLogger().error('❌ Invalid environment variables:', error)
     process.exit(1)
   }
 }

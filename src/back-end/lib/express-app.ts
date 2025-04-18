@@ -1,6 +1,7 @@
 import express, { ErrorRequestHandler, Express } from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { useLogger } from './logger.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -10,11 +11,12 @@ export const serveExpressApp = (
   applyRoutes?: (app: Express) => void,
   streamingUris: string[] = []
 ) => {
+  const log = useLogger()
   const app = express()
 
   // Get the public directory path - in production it will be in dist/public
   const publicDir = path.join(__dirname, '..', '..', '..', 'dist', 'public')
-  console.log('Serving static files from:', publicDir)
+  log.info(`Serving static files from: ${publicDir}`)
 
   // Serve static files from the dist/public directory
   app.use(express.static(publicDir))
@@ -41,7 +43,7 @@ export const serveExpressApp = (
 
   // Serve index.html for all non-API routes to support client-side routing
   const indexHtml = path.join(publicDir, 'index.html')
-  console.log('Serving index.html from:', indexHtml)
+  log.info(`Serving index.html from: ${indexHtml}`)
 
   app.get(/^(?!\/api\/).+/, (req, res) => {
     res.sendFile(indexHtml)
@@ -49,7 +51,7 @@ export const serveExpressApp = (
 
   // Error handling middleware
   const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
-    console.error('Error:', err)
+    log.error('Error:', err)
 
     // Ensure JSON response
     res.setHeader('Content-Type', 'application/json')
@@ -70,6 +72,6 @@ export const serveExpressApp = (
   app.use(errorHandler)
 
   app.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`)
+    log.info(`Server is running on http://${host}:${port}`)
   })
 }

@@ -49,3 +49,34 @@ export const CollectionType = z.object({
 
 // Type definition derived from the schema
 export type CollectionType = z.infer<typeof CollectionType>
+
+// MCP MODELS
+
+/* Tools list */
+export const McpListToolSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  inputSchema: z.object({
+    type: z.literal('object'),
+    properties: z.record(
+      z.string(),
+      z.object({
+        type: z.string(),
+        description: z.string()
+      })
+    ),
+    required: z.array(z.string())
+  })
+})
+
+export type McpListToolSchema = z.infer<typeof McpListToolSchema>
+
+/* Resource list */
+export const McpListResourceSchema = z.object({
+  uri: z.string(),
+  name: z.string(),
+  description: z.string(),
+  mimeType: z.string()
+})
+
+export type McpListResourceSchema = z.infer<typeof McpListResourceSchema>

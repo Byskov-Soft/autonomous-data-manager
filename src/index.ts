@@ -5,11 +5,12 @@ import { useResources } from './back-end/mcp/resources/index.js'
 import { useTools } from './back-end/mcp/tools/index.js'
 import { useSseServerTransport } from './back-end/mcp/transports/sse-server-transport.js'
 import { useStdioServerTransport } from './back-end/mcp/transports/stdio-server-transport.js'
-import { SERVER_MODE } from './back-end/models/enums.js'
+import { SERVER_MODE, TOOL_NAME } from './back-end/models/enums.js'
 import { applyApi } from './back-end/api/index.js'
 import { serveExpressApp } from './back-end/lib/express-app.js'
+import { createLogger } from './back-end/lib/logger.js'
 
-const { RUN_MODE, SSE_MODE_HOST, SSE_MODE_PORT } = getEnv()
+const { RUN_MODE, SSE_MODE_HOST, SSE_MODE_PORT, LOG_LEVEL } = getEnv()
 
 // Initialize server
 const server = new Server(
@@ -27,6 +28,8 @@ const server = new Server(
     }
   }
 )
+
+createLogger(LOG_LEVEL)
 
 // Setup MCP resources and tools
 useResources(server)

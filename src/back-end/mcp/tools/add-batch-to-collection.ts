@@ -1,51 +1,20 @@
 import Djv from 'djv'
-
 import { getCollectionTypeByCollectionName } from '../../persistence/collection-types.js'
 import { getToolsTextResponse, transformStringToJson } from '../../lib/utils.js'
 import { z, ZodError } from 'zod'
 import { CollectionType } from '../../models/entities.js'
 import { CallToolResult, CallToolRequest } from '@modelcontextprotocol/sdk/types.js'
 import { getEnv } from '../../lib/env.js'
-import { TOOL_NAME } from '../../models/enums.js'
 import { insertIntoCollection } from '../../persistence/index.js'
-
-const MARKDOWN_ENCOURAGEMENT =
-  'Use Markdown format for better readability - use # for headers, ``` for code blocks, - for lists'
-
-export const addBatchToCollectionSchema = {
-  name: TOOL_NAME.ADD_BATCH_TO_COLLECTION,
-  description: 'Add one or more documents to a collection with schema validation in a single operation',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      collection_name: {
-        type: 'string',
-        description: 'Name of the collection to add the documents to'
-      },
-      documents: {
-        type: 'string',
-        description: [
-          'JSON string containing an array of documents to add to the collection.',
-          "Each document must match the collection's schema. To ensure successful saving,",
-          'always provide data to the MCP server in valid JSON format, remembering',
-          'to properly escape special characters within string values.',
-          'If you have trouble inserting multiple documents due to errors, try inserting',
-          'a single document until you get it right, then add the rest.',
-          'When adding large text values, it is encouraged to ' + MARKDOWN_ENCOURAGEMENT
-        ].join(' ')
-      }
-    },
-    required: ['collection_name', 'documents']
-  }
-}
-
+import { useLogger } from '../../lib/logger.js'
 /**
  * Tool function to add multiple documents to a collection with schema validation
  * @param request - Tool request containing collection name and array of documents
  * @returns Tool return parameters with success/failure message
  */
 export async function addBatchToCollection(params: CallToolRequest['params']): Promise<CallToolResult> {
-  console.log('addBatchToCollection', params)
+  const log = useLogger()
+  log.info('addBatchToCollection', params)
 
   // Resolve the input parameters
   const { collectionName, documents, errorResponse } = resolveInputParams(params)
@@ -64,7 +33,7 @@ export async function addBatchToCollection(params: CallToolRequest['params']): P
     }
     jsonDocuments = parsed
   } catch (error) {
-    console.log('Invalid JSON in documents:', error)
+    log.error('Invalid JSON in documents:', error)
     return getToolsTextResponse(
       false,
       `Invalid JSON in documents: ${(error as Error)?.message ?? 'Unknown error'}`
@@ -80,7 +49,7 @@ export async function addBatchToCollection(params: CallToolRequest['params']): P
     const collectionType = await getCollectionTypeByCollectionName(collectionName)
 
     if (!collectionType) {
-      console.log('Collection type not found:', collectionName)
+      log.error('Collection type not found:', collectionName)
       return getToolsTextResponse(false, `Collection '${collectionName}' does not exist`)
     }
 
@@ -96,7 +65,7 @@ export async function addBatchToCollection(params: CallToolRequest['params']): P
     }
 
     // Insert documents into collection
-    console.log('Inserting documents into collection')
+    log.info('Inserting documents into collection')
     const results = await Promise.all(jsonDocuments.map((doc) => insertIntoCollection(collectionName, doc)))
 
     let hasLargeText = false
@@ -114,6 +83,11 @@ export async function addBatchToCollection(params: CallToolRequest['params']): P
       if (hasLargeText) break
     }
 
+    const MARKDOWN_ENCOURAGEMENT = [
+      'When adding large text values, it is encouraged to use Markdown format for better',
+      'readability - use # for headers, ``` for code blocks, - for lists'
+    ].join(' ')
+
     return getToolsTextResponse(
       true,
       [
@@ -122,7 +96,7 @@ export async function addBatchToCollection(params: CallToolRequest['params']): P
       ].join(' ')
     )
   } catch (error) {
-    console.log('Error adding documents to collection:', error)
+    log.error('Error adding documents to collection:', error)
     return getToolsTextResponse(false, `Error adding documents to collection: ${(error as Error).message}`)
   }
 }
@@ -162,8 +136,9 @@ const validateJsonDocument = (
   jsonDocument: Record<string, unknown>,
   collectionType: CollectionType
 ): CallToolResult | void => {
+  const log = useLogger()
   // Validate document against schema
-  console.log('Validating JSON conformity. Schema:\n', collectionType.schema)
+  log.info('Validating JSON conformity. Schema:\n', collectionType.schema)
   const djv = Djv()
   djv.addSchema('test', collectionType.schema)
   const invalid = djv.validate('test', jsonDocument)
@@ -173,7 +148,7 @@ const validateJsonDocument = (
       return getToolsTextResponse(false, `Document does not match schema: ${JSON.stringify(invalid)}`)
     } else {
       // Log warning but continue if validation is disabled
-      console.warn(
+      log.warn(
         `[WARNING] Document validation failed for collection '${collectionName}': ${JSON.stringify(invalid)}`
       )
     }

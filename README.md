@@ -93,24 +93,81 @@ To export collections to PDF:
     }
     ```
 
+### Start the app using scripts
+
+#### NPM Scripts
+
+- `start`
+   - Starts the back-end directly from sourcecs using *TSX*.
+   - Serves front-end from `dist/public/`
+   - No hot-reloading is enabled
+   - Front- and back-end are both available at port 3001
+
+- `dev:back`
+   - Starts the back-end on port 3001
+   - Hot-reloading is enabled
+
+- `dev:front`
+  - Starts the front-end on port 5173 (default Vite port)
+  - Hot-reloading is enabled
+
+- `dev`
+  - Runs `dev:back` and `dev:front` concurrently
+  - Front- and back-end are served from ports 5173 and 3001 respectively
+  - Hot-reloading is enabled for both
+
+- `start:prod`
+  - Run this script when providing the MCP server in **SSE** mode to an LLM
+  - Builds the app
+  - Runs the app from `dist/`, making available on port 3001
+  - No hot-reloading (obviously)
+
+#### Shell script
+
+- `run.sh`
+  - You are not supposed to run this shell script. Instead you will provide it for the LLM to run.
+  - Sets environment variables (NPM scripts above uses `dotenv`)
+  - Runs the app directly from `dist/` in **STDIO** mode
+  - Note that it will not compile the app for you, so make sure to do that beforehand
+
 ## Available resources
 
 - `data://server-description`
 
-  Server Description: Description of the data service and its use cases. If you are an AI, fetch and read this first!
+  Server Description: Description of the data service and its use cases.
 
 - `data://collections`
 
-  Metadata about available collections (see schema attribute)
+  Metadata about available collections
 
 ## Available tools
 
+**Note:** This section will not explain each tool in detail. Fot that please check
+`src/back-end/mcp/tools/_tools-schema.yml` where you can see the descriptions provided for the LLM.
+
 - add_collection_type
+
+  Create a new collection type in the database
+
 - add_batch_to_collection
+
+  Add one or more entries to a collection
+
 - get_from_collection
+
+  Perform a query to retrieve entries from a collection
+
 - delete_from_collection
+
+  Delete a collection entry
+
 - collection_summary
+
+  Get a summary of a collection (returns all entries but only includes the `_id` and `summary` fields)
+
 - get_resource_data
 
-Details to be added later
+  Provides the same information as the `data://server-description` and `data://collections` resources.
+  The reason for incuding it, is that not all MCP clients support resources.
 
+##

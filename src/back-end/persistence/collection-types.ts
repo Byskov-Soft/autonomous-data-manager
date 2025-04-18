@@ -2,20 +2,23 @@ import { Collection } from 'mongodb'
 import { CollectionType } from '../models/entities.js'
 import { useDatabase } from '../lib/database.js'
 import { COLLECTIONS } from '../models/enums.js'
+import { useLogger } from '../lib/logger.js'
 
 /**
  * Helper function to ensure the record follows the CollectionType model
  */
 function parseCollectionType(record: unknown): CollectionType {
+  const log = useLogger()
+
   if (typeof record === 'object') {
     try {
       // We don't modify the schema field here, just validate it can be parsed
       CollectionType.parse(record)
     } catch (error) {
-      console.error('Invalid schema for collection-type record:', JSON.stringify(record, null, 2), error)
+      log.error('Invalid schema for collection-type record:', JSON.stringify(record, null, 2), error)
     }
   } else {
-    console.error('Invalid collection-type:', record)
+    log.error('Invalid collection-type:', record)
   }
 
   return record as CollectionType

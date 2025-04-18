@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 
 export const useCollectionEntries = (collectionName: string | null) => {
-  console.log('Query from;', collectionName)
   const [entries, setEntries] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)

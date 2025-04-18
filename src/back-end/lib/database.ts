@@ -1,5 +1,6 @@
 import { MongoClient, Db } from 'mongodb'
 import { getEnv } from './env.js'
+import { useLogger } from './logger.js'
 
 // Singleton instance of the database connection
 let dbInstance: Db | null = null
@@ -53,7 +54,7 @@ async function closeConnection() {
       dbInstance = null
       client = null
     } catch (error) {
-      console.error('❌ Error closing MongoDB connection:', error)
+      useLogger().error('❌ Error closing MongoDB connection:', error)
     } finally {
       process.exit(0)
     }

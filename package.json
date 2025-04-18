@@ -5,13 +5,13 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "start": "dotenv -- tsx src/index.ts",
+    "start": "npm run build && dotenv -- tsx src/index.ts",
     "clean": "rimraf dist",
     "build": "tsc -p tsconfig.node.json && vite build",
     "dev:back": "dotenv -- tsx watch src/index.ts",
     "dev:front": "vite",
     "dev": "concurrently \"npm run dev:back\" \"npm run dev:front\"",
-    "start:prod": "npm run build && dotenv -- node dist/index.js"
+    "start:prod": "npm run clean && npm run build && dotenv -- node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +29,8 @@
     "rimraf": "^6.0.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vite": "^6.2.5"
+    "vite": "^6.2.5",
+    "vite-plugin-static-copy": "^2.3.1"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -42,7 +43,10 @@
     "express": "^5.0.1",
     "marked": "^15.0.7",
     "mongodb": "^6.15.0",
+    "node-yaml-config": "^1.0.0",
     "pdfkit": "^0.16.0",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
     "puppeteer": "^24.6.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

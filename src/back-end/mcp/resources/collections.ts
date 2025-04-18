@@ -1,21 +1,15 @@
 import { ReadResourceResult, Resource } from '@modelcontextprotocol/sdk/types.js'
 import { getAllCollectionTypes, deleteCollectionType } from '../../persistence/collection-types.js'
 import { getDynamicCollection } from '../../persistence/index.js'
-
-/**
- * Collections resource info
- */
-export const collectionsResourceSchema: Resource = {
-  uri: 'data://collections',
-  name: 'Available Collections',
-  description: 'Metadata about available collections (see schema attribute)',
-  mimeType: 'text/plain'
-}
+import { RESOURCE_NAME } from '../../models/enums.js'
+import { useLogger } from '../../lib/logger.js'
 
 /**
  * Retrieves the contents of the collections resource
  */
 export async function readCollectionsResource(): Promise<ReadResourceResult> {
+  const log = useLogger()
+
   // Get all resource collections
   const collections = await getAllCollectionTypes()
 
@@ -33,7 +27,7 @@ export async function readCollectionsResource(): Promise<ReadResourceResult> {
         }
         return collection
       } catch (error) {
-        console.log(
+        log.error(
           `Collection ${collection.collection_name} does not exist in MongoDB, removing its type record`
         )
         // Delete the collection type record since the actual collection doesn't exist
@@ -52,10 +46,9 @@ export async function readCollectionsResource(): Promise<ReadResourceResult> {
   return {
     contents: [
       {
-        uri: 'data://collections',
+        uri: `data://${RESOURCE_NAME.COLLECTIONS}`,
         mimeType: 'text/plain',
         name: 'Available Collections',
-
         text: JSON.stringify(sortedCollections)
       }
     ]

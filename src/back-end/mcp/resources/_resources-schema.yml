@@ -1,0 +1,13 @@
+default:
+
+  collections:
+    uri: data://collections
+    name: Available Collections
+    description: Metadata about available collections (the schema attribute describes the actual collection)
+    mimeType: text/plain
+
+  server-description:
+    uri: data://server-description
+    name: Server Description
+    description: Description of the data service and its use cases. If you are an AI, fetch and read this first!
+    mimeType: text/plain

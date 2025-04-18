@@ -55,7 +55,7 @@ export default function App() {
             </IconButton>
           </Box>
           <Typography variant="h6" color="text.secondary">
-            Data View Interface
+            Data View Interface aszdfasdfasfd
             <CollectionsPage />
           </Typography>
         </Box>

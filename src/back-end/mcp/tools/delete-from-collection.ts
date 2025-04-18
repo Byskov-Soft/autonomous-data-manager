@@ -1,57 +1,33 @@
-import { CallToolRequest, CallToolResult } from '@modelcontextprotocol/sdk/types.js'
+import { CallToolRequest, CallToolResult, Result } from '@modelcontextprotocol/sdk/types.js'
 import { ObjectId } from 'mongodb'
 import { getToolsTextResponse } from '../../lib/utils.js'
-import { TOOL_NAME } from '../../models/enums.js'
 import { updateInCollection } from '../../persistence/index.js'
 import { getCollectionTypeByCollectionName } from '../../persistence/collection-types.js'
-
-export const deleteFromCollectionSchema = {
-  name: TOOL_NAME.DELETE_FROM_COLLECTION,
-  description: "Delete documents from a collection by matching either MongoDB's _id or a custom id field",
-  inputSchema: {
-    type: 'object',
-    properties: {
-      collection_name: {
-        type: 'string',
-        description: 'Name of the collection to delete documents from'
-      },
-      attribute: {
-        type: 'string',
-        description: "Must be either '_id' or 'id' (if 'id' is present on the schema)",
-        enum: ['_id', 'id']
-      },
-      value: {
-        type: 'string',
-        description: 'Value of the _id or id to match for deletion'
-      }
-    },
-    required: ['collection_name', 'attribute', 'value']
-  }
-}
-
+import { useLogger } from '../../lib/logger.js'
 /**
  * Tool function to delete documents from a collection based on an exact attribute match
  * @param request - Tool request containing collection name, attribute, and value
  * @returns Tool return parameters with success/failure message and deletion count
  */
 export async function deleteFromCollection(params: CallToolRequest['params']): Promise<CallToolResult> {
-  console.log('deleteFromCollection', params)
+  const log = useLogger()
+  log.info('deleteFromCollection', params)
   const { collection_name, attribute, value } = params.arguments ?? {}
-  console.log({ collection_name, attribute, value })
+  log.info({ collection_name, attribute, value })
 
   // Validate input parameters
   if (!collection_name || typeof collection_name !== 'string') {
-    console.log('Invalid collection name:', collection_name)
+    log.error('Invalid collection name:', collection_name)
     return getToolsTextResponse(false, "'collection_name' must be present in the request params arguments")
   }
 
   if (attribute !== '_id' && attribute !== 'id') {
-    console.log('Invalid attribute:', attribute)
+    log.error('Invalid attribute:', attribute)
     return getToolsTextResponse(false, "attribute must be either '_id' or 'id'")
   }
 
   if (value === undefined || value === null) {
-    console.log('Missing value for deletion')
+    log.error('Missing value for deletion')
     return getToolsTextResponse(false, "'value' must be present in the request params arguments")
   }
 
@@ -59,7 +35,7 @@ export async function deleteFromCollection(params: CallToolRequest['params']): P
     // Check if collection exists
     const collectionType = await getCollectionTypeByCollectionName(collection_name)
     if (!collectionType) {
-      console.log('Collection not found:', collection_name)
+      log.error('Collection not found:', collection_name)
       return getToolsTextResponse(false, `Collection '${collection_name}' does not exist`)
     }
 
@@ -77,7 +53,7 @@ export async function deleteFromCollection(params: CallToolRequest['params']): P
       `Successfully deleted ${result} document${result !== 1 ? 's' : ''} from collection '${collection_name}'`
     )
   } catch (error) {
-    console.log('Error deleting from collection:', error)
+    log.error('Error deleting from collection:', error)
     return getToolsTextResponse(false, `Error deleting from collection: ${error}`)
   }
 }

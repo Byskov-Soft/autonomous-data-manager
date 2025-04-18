@@ -2,9 +2,11 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js'
 import { Express } from 'express'
 import { getEnv } from '../../lib/env.js'
+import { useLogger } from '../../lib/logger.js'
 
 export const useSseServerTransport = (server: Server, app: Express) => {
-  console.log(`Starting server in SSE mode`)
+  const log = useLogger()
+  log.info(`Starting server in SSE mode`)
   const env = getEnv()
   const activeTransports: { [sessionId: string]: SSEServerTransport } = {}
 
@@ -12,7 +14,7 @@ export const useSseServerTransport = (server: Server, app: Express) => {
   const KEEP_ALIVE_INTERVAL = 15000
 
   app.get('/sse', async (req, res) => {
-    console.log('SSE Request received')
+    log.info('SSE Request received')
 
     // Set headers for SSE
     res.setHeader('Content-Type', 'text/event-stream')
@@ -27,8 +29,8 @@ export const useSseServerTransport = (server: Server, app: Express) => {
     const sessionId = transport.sessionId
     activeTransports[sessionId] = transport
 
-    console.log(`SSE Client ${sessionId} connected`)
-    console.log('Number of SSE clients connected:', Object.keys(activeTransports).length)
+    log.info(`SSE Client ${sessionId} connected`)
+    log.info(`Number of SSE clients connected: ${Object.keys(activeTransports).length}`)
 
     // Set up keep-alive interval
     const keepAliveInterval = setInterval(() => {
@@ -42,23 +44,23 @@ export const useSseServerTransport = (server: Server, app: Express) => {
     await server.connect(transport)
 
     res.on('close', () => {
-      console.log(`SSE Client ${sessionId} disconnected`)
+      log.info(`SSE Client ${sessionId} disconnected`)
       clearInterval(keepAliveInterval)
       delete activeTransports[sessionId]
     })
 
     // Handle errors
     res.on('error', (error) => {
-      console.error(`SSE Client ${sessionId} error:`, error)
+      log.error(`SSE Client ${sessionId} error:`, error)
       clearInterval(keepAliveInterval)
       delete activeTransports[sessionId]
     })
   })
 
   app.post('/messages', (req, res) => {
-    console.log(`/message Request received`)
+    log.info(`/message Request received`)
     const sessionId = req.query.sessionId as string // Extract from query
-    console.log(`Session ID: ${sessionId}`)
+    log.info(`Session ID: ${sessionId}`)
     const transport = activeTransports[sessionId]
 
     if (transport) {

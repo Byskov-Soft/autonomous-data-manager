@@ -4,67 +4,7 @@ import { transformStringToJson, getToolsTextResponse } from '../../lib/utils.js'
 import { getDynamicCollection } from '../../persistence/index.js'
 import { z } from 'zod'
 import { CallToolRequest, CallToolResult } from '@modelcontextprotocol/sdk/types.js'
-import { TOOL_NAME } from '../../models/enums.js'
-
-const COLLECTION_TYPE_TOOL_DESCRIPTION = [
-  'Add a collection type to the database. This allows the AI to define a collection',
-  '(using a schema), that will be automatically created, and perform CRUD operations',
-  'on that collection.'
-].join(' ')
-
-const COLLECTION_TYPE_PARAM_DESCRIPTION = [
-  'Add a collection type to the database with a defined schema.',
-  "The 'collection' parameter must be a JSON string (not an object)",
-  'including the following properties: id, name, collection_name, description, and schema."',
-  'The schema property should follow the JSON Schema format defined by: type, properties and required attributes.',
-  'The schema properties must include a "summary" field of type string.',
-  'Only the "summary" field is mandatory. Using an "id" field is optional as "_id" UUIDs are auto generated.',
-  'However, it is good to include "id" as deletion can only be done by "_id" or "id".',
-  'Example: {"collection": "{"id":"products","name":"Products","collection_name":"products",',
-  '"schema":{"type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},',
-  '"summary":{"type":"string"}},"required":["id","name","summary"]}}}'
-].join(' ')
-
-const COLLECTION_TYPE_EXAMPLE_RECORD = `
-{
-  "id": "products",
-  "name": "Products",
-  "collection_name": "products",
-  "description": "Store product information",
-  "schema": {
-    "type": "object",
-    "properties": {
-      "id": { "type": "string" },
-      "summary": {
-        "type": "string",
-        "description": "A concise description of the topic and conclusion"
-      },
-      "name": { "type": "string" },
-      "price": { "type": "number" },
-      "description": { "type": "string" },
-      "inStock": { "type": "boolean" }
-    },
-    "required": ["id", "name", "price", "summary"]
-  }
-}
-`
-
-export const addCollectionTypeSchema = {
-  name: TOOL_NAME.ADD_COLLECTION_TYPE,
-  description: COLLECTION_TYPE_TOOL_DESCRIPTION,
-  inputSchema: {
-    type: 'object',
-    properties: {
-      collection: {
-        type: 'string',
-        description: COLLECTION_TYPE_PARAM_DESCRIPTION,
-        examples: [COLLECTION_TYPE_EXAMPLE_RECORD]
-      }
-    },
-    required: ['collection']
-  }
-}
-
+import { useLogger } from '../../lib/logger.js'
 /**
  * Tool function to add a new collection to the database
  * This function is used with the CallToolRequestSchema MCP handler
@@ -73,7 +13,8 @@ export const addCollectionTypeSchema = {
  * @returns Object with success message and created collection details
  */
 export async function addCollectionType(params: CallToolRequest['params']): Promise<CallToolResult> {
-  console.log('Adding collection type:', params)
+  const log = useLogger()
+  log.info('Adding collection type:', params)
   let collection: string
   let jsonCollection: Record<string, unknown>
   let collectionType: CollectionType
@@ -86,7 +27,7 @@ export async function addCollectionType(params: CallToolRequest['params']): Prom
   }
 
   // Parse the collection data from JSON string to JSON object
-  console.log('Parsing collection data:', collection)
+  log.info('Parsing collection data:', collection)
 
   try {
     jsonCollection = transformStringToJson(collection)
@@ -116,7 +57,7 @@ export async function addCollectionType(params: CallToolRequest['params']): Prom
     schema: collectionType.schema
   }
 
-  console.log('Creating new collection type:', newCollection)
+  log.info('Creating new collection type:', newCollection)
 
   try {
     const mongoCollection = await getDynamicCollection(newCollection.collection_name)
@@ -127,7 +68,7 @@ export async function addCollectionType(params: CallToolRequest['params']): Prom
 
     return getToolsTextResponse(true, `Collection '${newCollection.name}' was added and initialized`)
   } catch (error) {
-    console.log('Error adding collection:', (error as Error).message)
+    log.error('Error adding collection:', (error as Error).message)
     return getToolsTextResponse(false, `Error adding collection: ${error}`)
   }
 }

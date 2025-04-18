@@ -1,7 +1,8 @@
-import { Request, Response, RequestHandler } from 'express'
+import { RequestHandler } from 'express'
 import { useDatabase } from '../lib/database.js'
 import { z } from 'zod'
 import { CollectionType } from '../models/entities.js'
+import { useLogger } from '../lib/logger.js'
 
 /**
  * Schema for the projected collection type data
@@ -22,8 +23,10 @@ type ProjectedCollectionType = z.infer<typeof ProjectedCollectionType>
  * @returns Array of validated collection types with basic information
  */
 export const getCollectionTypes: RequestHandler = async (_req, res, next) => {
+  const log = useLogger()
+
   try {
-    console.log('Getting collection types')
+    log.info('Getting collection types')
     const db = await useDatabase()
 
     // Get all collection types with projected fields
@@ -46,7 +49,8 @@ export const getCollectionTypes: RequestHandler = async (_req, res, next) => {
 
     // Parse and validate the results using the Zod schema
     const validatedCollections = z.array(ProjectedCollectionType).parse(rawCollections)
-    console.log('validatedCollections', validatedCollections)
+    log.info('validatedCollections', validatedCollections)
+
     res.json({
       collection_types: validatedCollections
     })
