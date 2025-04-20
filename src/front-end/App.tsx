@@ -1,9 +1,9 @@
-import { ThemeProvider, CssBaseline, Container, Typography, Box, IconButton } from '@mui/material'
-import { createTheme } from '@mui/material/styles'
-import { CollectionsPage } from './components/Collections'
-import { useState, useMemo } from 'react'
 import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
+import { Box, Container, CssBaseline, IconButton, ThemeProvider, Typography } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
+import { useMemo, useState } from 'react'
+import { CollectionsPage } from './components/Collections'
 
 export default function App() {
   const [mode, setMode] = useState<'light' | 'dark'>('light')
@@ -55,7 +55,7 @@ export default function App() {
             </IconButton>
           </Box>
           <Typography variant="h6" color="text.secondary">
-            Data View Interface aszdfasdfasfd
+            Data View Interface
             <CollectionsPage />
           </Typography>
         </Box>
